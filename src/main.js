@@ -1,56 +1,139 @@
-const electron = require('electron');
-// Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Tray,
+  Menu,
+  nativeImage,
+} = require("electron");
+const path = require("path");
 
-const path = require('path');
-const url = require('url');
+let tray = undefined;
+let window = undefined;
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+const os = require("os");
+const platforms = {
+  WINDOWS: "WINDOWS",
+  MAC: "MAC",
+  LINUX: "LINUX",
+};
 
-function createWindow() {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+const platformsNames = {
+  win32: platforms.WINDOWS,
+  darwin: platforms.MAC,
+  linux: platforms.LINUX,
+};
 
-    // and load the index.html of the app.
-    mainWindow.loadURL('http://localhost:3000');
+const currentPlatform = platformsNames[os.platform()];
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
-
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        mainWindow = null
-    })
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
+app.on("ready", () => {
+  createTray();
+  createWindow();
 });
 
-app.on('activate', function () {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
-        createWindow()
-    }
-});
+const createTray = () => {
+  var iconPath = path.join(__dirname, "rucioSqLogo.png");
+  let trayIcon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(trayIcon);
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Rucio",
+      click: () => {
+        showWindow();
+        window.reload();
+      },
+    },
+    {
+      label: "Separator",
+      type: "separator",
+    },
+    {
+      label: "Help Centre",
+      click: () => {
+        showHelp();
+      },
+    },
+    {
+      label: "Quit",
+      click: () => {
+        window.destroy();
+        tray.destroy();
+      },
+    },
+  ]);
+  tray.setToolTip("Rucio");
+  tray.on("click", function (event) {
+    toggleWindow();
+  });
+  tray.setContextMenu(contextMenu);
+};
+
+const getWindowPosition = () => {
+  const windowBounds = window.getBounds();
+  const trayBounds = tray.getBounds();
+
+  if (currentPlatform != "LINUX") {
+    // Center window horizontally below the tray icon
+    const x = Math.round(
+      trayBounds.x - trayBounds.width / 2 + windowBounds.width / 2 - 320
+    );
+
+    // Position window 4 pixels vertically below the tray icon
+    const y = Math.round(trayBounds.y - trayBounds.height - 440);
+
+    return { x: x, y: y };
+  } else {
+    return { x: 1500, y: 5 };
+  }
+};
+
+//-40 in size for setting the constant value in position
+const createWindow = () => {
+  window = new BrowserWindow({
+    width: 360,
+    height: 480,
+    show: false,
+    frame: false,
+    fullscreenable: false,
+    resizable: false,
+    transparent: false,
+    skipTaskbar: true,
+    scrollable: false,
+    backgroundColor: "#fffafa",
+    webPreferences: {
+      backgroundThrottling: false,
+    },
+  });
+
+  // Hide the window when it loses focus
+  // window.on('blur', () => {
+  //   if (!window.webContents.isDevToolsOpened()) {
+  //     window.hide()
+  //   }
+  // })
+};
+
+const toggleWindow = () => {
+  window.isVisible() ? window.hide() : showWindow();
+};
+
+const showWindow = () => {
+  const position = getWindowPosition();
+  window.setPosition(position.x, position.y, false);
+  window.loadURL("http://localhost:3000");
+  window.once("ready-to-show", () => {
+    window.show();
+  });
+};
+
+const showHelp = () => {
+  const position = getWindowPosition();
+  window.setPosition(position.x, position.y, false);
+  window.loadURL("http://localhost:3000");
+  window.show();
+};
+
+ipcMain.on("show-window", () => {
+  showWindow();
+});

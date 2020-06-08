@@ -1,5 +1,5 @@
 # rucio-notifier
-Rucio Notification Utility with a graphical user interface.
+Rucio Notification Utility with a graphical user interface. This app uses React v16.13.1 and Electron v7.0.0
 
 ## Getting Started
 Fork the repository or clone it directly to run on your system.
@@ -24,6 +24,16 @@ $ npm run electron
 ```
 
 This will start the React dev server inside of an Electron window. Any changes will be refleted live in the app.
+
+## Troubleshooting
+
+In case of an `code ELIFECYCLE` npm error, perform the following steps
+
+```BASH
+$ npm cache clean --force
+$ rm -rf node_modules package-lock.json
+$ npm install && npm start
+```
 
 ## Notes
 
