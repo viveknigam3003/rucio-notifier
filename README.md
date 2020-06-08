@@ -14,13 +14,13 @@ $ cd rucio-notifier
 To start the React dev server
 
 ```BASH
-npm install && npm start
+$ npm install && npm start
 ```
 
 To run the electron app window with React. Open a new terminal window and run
 
 ```BASH
-npm run electron
+$ npm run electron
 ```
 
 This will start the React dev server inside of an Electron window. Any changes will be refleted live in the app.
