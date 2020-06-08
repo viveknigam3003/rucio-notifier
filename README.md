@@ -1,7 +1,7 @@
 # rucio-notifier
 Rucio Notification Utility with a graphical user interface.
-This app uses React v16.13.1 and Electron v7.0.0.
-`viveknigam3003/rucio-notifier` has been ported to `[rucio/notifier]`(https://github.com/rucio/notifier)
+The app uses React v16.13.1 and Electron v7.0.0.
+This repo (viveknigam3003/rucio-notifier) has been ported to [rucio/notifier](https://github.com/rucio/notifier).
 
 ## Getting Started
 Fork the repository or clone it directly to run on your system.
