@@ -1,11 +1,4 @@
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  Tray,
-  Menu,
-  nativeImage,
-} = require("electron");
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } = require("electron");
 const path = require("path");
 
 let tray = undefined;
@@ -15,13 +8,13 @@ const os = require("os");
 const platforms = {
   WINDOWS: "WINDOWS",
   MAC: "MAC",
-  LINUX: "LINUX",
+  LINUX: "LINUX"
 };
 
 const platformsNames = {
   win32: platforms.WINDOWS,
   darwin: platforms.MAC,
-  linux: platforms.LINUX,
+  linux: platforms.LINUX
 };
 
 const currentPlatform = platformsNames[os.platform()];
@@ -35,35 +28,33 @@ const createTray = () => {
   var iconPath = path.join(__dirname, "rucioSqLogo.png");
   let trayIcon = nativeImage.createFromPath(iconPath);
   tray = new Tray(trayIcon);
-
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Rucio",
       click: () => {
         showWindow();
-        window.reload();
-      },
+      }
     },
     {
       label: "Separator",
-      type: "separator",
+      type: "separator"
     },
     {
       label: "Help Centre",
       click: () => {
         showHelp();
-      },
+      }
     },
     {
       label: "Quit",
       click: () => {
         window.destroy();
         tray.destroy();
-      },
-    },
+      }
+    }
   ]);
   tray.setToolTip("Rucio");
-  tray.on("click", function (event) {
+  tray.on("click", function(event) {
     toggleWindow();
   });
   tray.setContextMenu(contextMenu);
@@ -102,16 +93,16 @@ const createWindow = () => {
     scrollable: false,
     backgroundColor: "#fffafa",
     webPreferences: {
-      backgroundThrottling: false,
-    },
+      backgroundThrottling: false
+    }
   });
 
   // Hide the window when it loses focus
-  // window.on('blur', () => {
-  //   if (!window.webContents.isDevToolsOpened()) {
-  //     window.hide()
-  //   }
-  // })
+   window.on('blur', () => {
+     if (!window.webContents.isDevToolsOpened()) {
+       window.hide()
+     }
+   })
 };
 
 const toggleWindow = () => {
@@ -121,16 +112,14 @@ const toggleWindow = () => {
 const showWindow = () => {
   const position = getWindowPosition();
   window.setPosition(position.x, position.y, false);
-  window.loadURL("http://localhost:3000");
-  window.once("ready-to-show", () => {
-    window.show();
-  });
+  window.loadURL('http://localhost:3000');
+  window.show();
 };
 
 const showHelp = () => {
   const position = getWindowPosition();
   window.setPosition(position.x, position.y, false);
-  window.loadURL("http://localhost:3000");
+  window.loadURL('http://localhost:3000');
   window.show();
 };
 
