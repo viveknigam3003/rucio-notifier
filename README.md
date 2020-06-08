@@ -9,7 +9,7 @@ $ git clone https://github.com/<your-username>/rucio-notifier.git
 $ cd rucio-notifier
 ```
 
-* Starting the React and Electron Servers (Dev)
+__Starting the React and Electron Servers (Dev)__
 
 To start the React dev server
 
